@@ -4,8 +4,31 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req, res) {
     if (req.method === 'POST') {
-        const url = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/bad%20bruinha/br1";
+        const preUser = await req.json()
+
         let data = []
+        let user = ""
+
+        function processString(str) {
+            // Verifica se há um jogo da velha (#)
+            if (str.includes("#")) {
+                // Separa a string na posição do jogo da velha
+                let parts = str.split("#");
+                // Converte espaços para %20 nas duas partes
+                let part1 = parts[0].replace(/ /g, "%20");
+                let part2 = parts[1].replace(/ /g, "%20");
+                // Retorna as duas partes em um objeto
+                return { name: part1, tag: part2 };
+            } else {
+                // Se não houver jogo da velha, apenas converte espaços para %20
+                return str.replace(/ /g, "%20");
+            }
+        }
+
+        user = processString(preUser)
+        const url = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${user.name}/${user.tag}`;
+        console.log(user, "body")
+
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -15,7 +38,7 @@ export async function POST(req, res) {
                     "Accept-Language": "en-US,en;q=0.9,pt;q=0.8",
                     "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
                     "Origin": "https://developer.riotgames.com",
-                    "X-Riot-Token": "RGAPI-412077e0-f915-4ee3-a6ee-43d79e69b8f0"
+                    "X-Riot-Token": "RGAPI-8cac86ff-e81e-47fb-bb2f-31b82154c694"
                 }
             });
             const responsePUUID = await response.json()
@@ -33,7 +56,7 @@ export async function POST(req, res) {
                     "Accept-Language": "en-US,en;q=0.9,pt;q=0.8",
                     "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
                     "Origin": "https://developer.riotgames.com",
-                    "X-Riot-Token": "RGAPI-412077e0-f915-4ee3-a6ee-43d79e69b8f0"
+                    "X-Riot-Token": "RGAPI-8cac86ff-e81e-47fb-bb2f-31b82154c694"
                 }
             });
             const responseMatches = await dataRequest.json()
@@ -48,7 +71,7 @@ export async function POST(req, res) {
                         "Accept-Language": "en-US,en;q=0.9,pt;q=0.8",
                         "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
                         "Origin": "https://developer.riotgames.com",
-                        "X-Riot-Token": "RGAPI-412077e0-f915-4ee3-a6ee-43d79e69b8f0"
+                        "X-Riot-Token": "RGAPI-8cac86ff-e81e-47fb-bb2f-31b82154c694"
                     }
                 });
                 return response.json();
@@ -58,7 +81,7 @@ export async function POST(req, res) {
                 try {
                     const arrMatches = await Promise.all(responseMatches.map(element => fetchMatchData(element)));
                     arrMatches.map((item) => item.info.participants.map((itemX) => {
-                        if (itemX?.summonerName === "bad bruinha" && itemX?.championName === "Urgot") {
+                        if (itemX?.summonerName === preUser.split('#')[0] && itemX?.championName === "Jinx") {
                             data = [itemX, ...data]
                         }
                     }))

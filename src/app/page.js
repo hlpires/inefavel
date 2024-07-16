@@ -12,6 +12,7 @@ import twitch from "../app/assets/twitch.png"
 import instagram from "../app/assets/instagram.png"
 import tiktok from "../app/assets/tiktok.png"
 import defaultImage from "../app/assets/default.png"
+import ApiCall from './components/ApiCall';
 
 export default function Page() {
 
@@ -53,14 +54,16 @@ export default function Page() {
     setSelection(newObject)
   }
 
-  const apiCall = async () => {
+  const apiCallRequest = async (user) => {
+    console.log(user)
     const request = await fetch(`/api/callData`, {
       headers: {
         'Content-Type': 'application/json'
       },
+      body: JSON.stringify(user),
       method: 'POST'
     })
-    console.log(request)
+
   };
 
   return <div style={{ justifyContent: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -219,9 +222,7 @@ export default function Page() {
         }
         {selection.Skills &&
           <div style={{ width: "100%", height: "100%", display: "flex", flexWrap: "wrap", color: "white" }}>
-            <div
-              onClick={() => apiCall()}
-              style={{ padding: "20px", background: "pink", height: "20px" }}></div>
+            <ApiCall apiCall={(user) => apiCallRequest(user)} />
           </div>
         }
         {selection.Combos &&
