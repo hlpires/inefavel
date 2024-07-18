@@ -35,7 +35,7 @@ export default function Page() {
 
   const [modal, setModal] = useState(false)
 
-  const [information, setInformation] = useState({})
+  const [data, setData] = useState({})
 
 
   const changeSelection = (key) => {
@@ -64,7 +64,11 @@ export default function Page() {
       method: 'POST'
     })
 
+    const dataRequest = await request.json()
+    setData(dataRequest.data)
   };
+
+  console.log(data)
 
   return <div style={{ justifyContent: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
     <Grid container spacing={2} style={{
@@ -171,7 +175,7 @@ export default function Page() {
     <Grid container spacing={2} style={{ maxWidth: "1000px", marginTop: "40px", scale: "0.9" }}>
       <Grid item xs={12}
         style={{
-          height: "600px",
+          height: selection.Skills ? "1600px" : "600px",
           borderTopRightRadius: "10px",
           borderBottomRightRadius: "10px",
           borderBottomLeftRadius: "10px",
@@ -222,7 +226,7 @@ export default function Page() {
         }
         {selection.Skills &&
           <div style={{ width: "100%", height: "100%", display: "flex", flexWrap: "wrap", color: "white" }}>
-            <ApiCall apiCall={(user) => apiCallRequest(user)} />
+            <ApiCall apiCall={(user) => apiCallRequest(user)} data={data} />
           </div>
         }
         {selection.Combos &&
