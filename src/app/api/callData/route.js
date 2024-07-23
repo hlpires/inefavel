@@ -40,16 +40,16 @@ export async function POST(req) {
                     "Accept-Language": "en-US,en;q=0.9,pt;q=0.8",
                     "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
                     "Origin": "https://developer.riotgames.com",
-                    "X-Riot-Token": "RGAPI-077e1117-19f3-461c-8dda-b34212173f20"
+                    "X-Riot-Token": "RGAPI-88a86147-0e84-4422-a2ad-066292c2d36d"
                 }
             });
             const responsePUUID = await response.json()
             const PUUID = responsePUUID.puuid
-
+            console.log(PUUID)
             //lol/match/v5/matches/by-puuid/{puuid}/ids //pegar ultimas 20 partidas
             //lol/match/v5/matches/{matchId} // 
             //MATCHV5
-            const url2 = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${PUUID}/ids`
+            const url2 = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${PUUID}/ids?start=0&count=20`
             const dataRequest = await fetch(url2, {
                 method: 'GET',
                 headers: {
@@ -58,7 +58,7 @@ export async function POST(req) {
                     "Accept-Language": "en-US,en;q=0.9,pt;q=0.8",
                     "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
                     "Origin": "https://developer.riotgames.com",
-                    "X-Riot-Token": "RGAPI-077e1117-19f3-461c-8dda-b34212173f20"
+                    "X-Riot-Token": "RGAPI-88a86147-0e84-4422-a2ad-066292c2d36d"
                 }
             });
             const responseMatches = await dataRequest.json()
@@ -73,7 +73,8 @@ export async function POST(req) {
                         "Accept-Language": "en-US,en;q=0.9,pt;q=0.8",
                         "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
                         "Origin": "https://developer.riotgames.com",
-                        "X-Riot-Token": "RGAPI-077e1117-19f3-461c-8dda-b34212173f20"
+                        "X-Riot-Token": "RGAPI-88a86147-0e84-4422-a2ad-066292c2d36d",
+                        "count": 100
                     }
                 });
                 return response.json();
@@ -81,9 +82,12 @@ export async function POST(req) {
 
             const fetchAllMatchData = async () => {
                 try {
+
                     const arrMatches = await Promise.all(responseMatches.map(element => fetchMatchData(element)));
-                    arrMatches.map((item) => item.info.participants.map((itemX) => {
-                        if (itemX?.riotIdGameName === preUser.split('#')[0] && itemX?.championName === "Gwen") {
+                    console.log(arrMatches.length)
+                    arrMatches.map((item) => item.info?.participants.map((itemX) => {
+                        if (itemX?.riotIdGameName === preUser.split('#')[0] && itemX?.championName === "Aatrox") {
+                            console.log("passou")
                             data = [itemX, ...data]
                         }
                     }))
@@ -95,7 +99,7 @@ export async function POST(req) {
             };
 
             const result = await fetchAllMatchData();
-            console.log(result, "result")
+            console.log(result.length, "result")
             return NextResponse.json({ data: result }, { status: 200 })
 
         } catch (error) {
